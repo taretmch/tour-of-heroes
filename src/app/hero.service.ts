@@ -14,6 +14,11 @@ export class HeroService {
   // Web API の URL
   private heroesUrl = 'api/heroes';
 
+  httpOptions = {
+    // ヘッダーの定義
+    headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+  };
+
   constructor(
     private messageService: MessageService,
     private http:           HttpClient
@@ -37,6 +42,14 @@ export class HeroService {
     return this.http.get<Hero>(url).pipe(
       tap(_ => this.log(`fetch hero id=${id}`)),
       catchError(this.handleError<Hero>(`getHero id=${id}`))
+    );
+  }
+
+  // PUT: ヒーローの更新
+  updateHero (hero: Hero): Observable<any> {
+    return this.http.put(this.heroesUrl, hero, this.httpOptions).pipe(
+      tap(_ => this.log(`updated hero id=${hero.id}`)),
+      catchError(this.handleError<any>('updateHero'))
     );
   }
 
