@@ -26,13 +26,18 @@ export class HeroService {
   getHeroes(): Observable<Hero[]> {
     return this.http.get<Hero[]>(this.heroesUrl)
       .pipe(
-        catchError(this.handleError<Hero>('getHeroes', []))
+        // tap は、Observable な値を見て、その値に処理を行い、それらを渡す
+        tap(heroes => this.log('fetched heroes')),
+        catchError(this.handleError<Hero[]>('getHeroes', []))
       );
   }
 
   getHero(id: number): Observable<Hero> {
-    this.messageService.add(`HeroService: fetched hero id=${id}`);
-    return of(HEROES.find(hero => hero.id === id));
+    const url = `${this.heroesUrl}/${id}`;
+    return this.http.get<Hero>(url).pipe(
+      tap(_ => this.log(`fetch hero id=${id}`)),
+      catchError(this.handleError<Hero>(`getHero id=${id}`))
+    );
   }
 
   /**
